@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { KpiGridSkeleton } from '@/components/Skeleton';
 
 interface OverviewResponse {
   dbHealth: { reachable: boolean; latencyMs: number };
@@ -48,11 +49,14 @@ export default function DashboardPage() {
   const { token, user } = useAuth();
   const [overview, setOverview] = useState<OverviewResponse | null>(null);
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     apiFetch<OverviewResponse>('/audit/overview', { token })
       .then(setOverview)
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
 
     if (token) {
       apiFetch<{ items: AlertItem[] }>('/evidences/alerts?unacknowledged=true', { token })
@@ -131,22 +135,26 @@ export default function DashboardPage() {
       )}
 
       {/* KPI Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {kpis.map((k) => {
-          const Icon = k.icon;
-          return (
-            <Link key={k.label} href={k.href} className="card p-5 hover:border-emerald-300 transition flex items-center justify-between">
-              <div>
-                <div className="text-xs font-medium text-slate-500">{k.label}</div>
-                <div className="text-2xl font-bold text-slate-900 mt-1">{k.value}</div>
-              </div>
-              <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${k.color}`}>
-                <Icon className="w-5 h-5" />
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+      {loading && !overview ? (
+        <KpiGridSkeleton count={6} />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {kpis.map((k) => {
+            const Icon = k.icon;
+            return (
+              <Link key={k.label} href={k.href} className="card p-5 hover:border-emerald-300 transition flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-medium text-slate-500">{k.label}</div>
+                  <div className="text-2xl font-bold text-slate-900 mt-1">{k.value}</div>
+                </div>
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${k.color}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
 
       {/* Expiry Alerts Banner */}
       {alerts.length > 0 && (

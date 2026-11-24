@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { ArrowDownRight, ArrowRight, Clock, GitBranch, Search } from 'lucide-react';
 import { apiFetch, ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { TraceSkeleton } from '@/components/Skeleton';
 
 interface TraceResponse {
   direction: 'BACKWARD' | 'FORWARD';
@@ -179,7 +180,9 @@ export default function TracePage() {
         <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm font-medium">{error}</div>
       )}
 
-      {result && (
+      {loading && <TraceSkeleton />}
+
+      {!loading && result && (
         <div className="space-y-5">
           {/* Metrics Strip */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

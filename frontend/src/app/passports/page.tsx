@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ExternalLink, Layers, Plus, QrCode, RefreshCw, ShieldCheck } from 'lucide-react';
 import { apiFetch, ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { DetailCardSkeleton, SplitPaneSkeleton } from '@/components/Skeleton';
 
 interface PassportSummary {
   id: string;
@@ -55,6 +56,8 @@ export default function PassportsPage() {
   const [selected, setSelected] = useState<AudiencePassportDetail | null>(null);
   const [verifyInfo, setVerifyInfo] = useState<{ verified: boolean; lotsChecked: number; eventsChecked: number } | null>(null);
   const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
+  const [loadingList, setLoadingList] = useState(true);
+  const [loadingDetail, setLoadingDetail] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createForm, setCreateForm] = useState({
     passportCode: '',
@@ -69,8 +72,10 @@ export default function PassportsPage() {
     if (!token) {
       setPassports([]);
       setSelected(null);
+      setLoadingList(false);
       return;
     }
+    setLoadingList(true);
     try {
       const [res, lRes, bRes] = await Promise.all([
         apiFetch<{ items: PassportSummary[] }>('/passports?limit=30', { token }),
@@ -102,6 +107,8 @@ export default function PassportsPage() {
       }
     } catch (e) {
       setMsg({ type: 'err', text: e instanceof ApiError ? e.message : 'Failed to load passports' });
+    } finally {
+      setLoadingList(false);
     }
   }, [token]);
 
@@ -112,12 +119,15 @@ export default function PassportsPage() {
   const inspectPassport = async (code: string, version?: number) => {
     setVerifyInfo(null);
     setMsg(null);
+    setLoadingDetail(true);
     try {
       const q = version ? `?version=${version}` : '';
       const detail = await apiFetch<AudiencePassportDetail>(`/passports/${code}${q}`, { token });
       setSelected(detail);
     } catch (e) {
       setMsg({ type: 'err', text: e instanceof ApiError ? e.message : 'Access refused' });
+    } finally {
+      setLoadingDetail(false);
     }
   };
 
@@ -237,6 +247,9 @@ export default function PassportsPage() {
         </div>
       )}
 
+      {loadingList ? (
+        <SplitPaneSkeleton leftCols={4} rightCols={8} />
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Passport List */}
         <div className="lg:col-span-4 space-y-2.5">
@@ -266,7 +279,9 @@ export default function PassportsPage() {
 
         {/* Selected Passport Detail */}
         <div className="lg:col-span-8">
-          {selected ? (
+          {loadingDetail ? (
+            <DetailCardSkeleton />
+          ) : selected ? (
             <div className="card p-6 space-y-5">
               <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-4">
                 <div>
@@ -457,6 +472,7 @@ export default function PassportsPage() {
           )}
         </div>
       </div>
+      )}
 
       {/* Create New Passport Modal */}
       {showCreateModal && (

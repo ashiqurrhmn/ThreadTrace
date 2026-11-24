@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { CheckCircle2, Download, FileSpreadsheet, Upload, XCircle } from 'lucide-react';
 import { API_BASE, apiFetch, ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { TableSkeleton } from '@/components/Skeleton';
 
 interface ImportJob {
   id: string;
@@ -26,15 +27,22 @@ export default function ImportsPage() {
   const [importType, setImportType] = useState<'CUTTING_REPORT' | 'PACKING_LIST' | 'LOT_EVENTS'>('CUTTING_REPORT');
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const loadJobs = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     try {
       const res = await apiFetch<{ items: ImportJob[] }>('/imports', { token });
       setJobs(res.items);
     } catch {
       // ignore
+    } finally {
+      setLoading(false);
     }
   }, [token]);
 
@@ -187,6 +195,9 @@ export default function ImportsPage() {
       )}
 
       {/* Import History */}
+      {loading ? (
+        <TableSkeleton rows={4} cols={5} />
+      ) : (
       <div className="card overflow-x-auto">
         <div className="px-4 py-3 bg-slate-50 border-b text-xs font-bold uppercase text-slate-500">
           Import History ({jobs.length})
@@ -224,6 +235,7 @@ export default function ImportsPage() {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Database, Lock, RefreshCw, ShieldCheck } from 'lucide-react';
 import { apiFetch, ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { ComplianceSkeleton } from '@/components/Skeleton';
 
 interface DefectReport {
   auditedAt: string;
@@ -111,6 +112,10 @@ export default function CompliancePage() {
       </div>
 
       {/* Claim & Lineage Compliance Audit */}
+      {loading && !defects ? (
+        <ComplianceSkeleton />
+      ) : (
+      <>
       <div className="card p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
@@ -220,6 +225,8 @@ export default function CompliancePage() {
           </div>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }

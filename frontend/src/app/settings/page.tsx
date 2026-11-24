@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Plus, Save, Settings } from 'lucide-react';
 import { apiFetch, ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { TableSkeleton } from '@/components/Skeleton';
 
 interface ProcessConfig {
   code: string;
@@ -35,6 +36,7 @@ export default function SettingsPage() {
   const [certTypes, setCertTypes] = useState<CertTypeConfig[]>([]);
   const [allocationMethod, setAllocationMethod] = useState<'MASS' | 'PIECE_COUNT'>('MASS');
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
+  const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
 
   const [newProc, setNewProc] = useState({
@@ -58,6 +60,7 @@ export default function SettingsPage() {
   const [newField, setNewField] = useState({ key: '', label: '', defaultValue: '' });
 
   const load = useCallback(async () => {
+    setLoading(true);
     try {
       const res = await apiFetch<{
         processConfigs: ProcessConfig[];
@@ -70,6 +73,8 @@ export default function SettingsPage() {
       setCustomFields(Array.isArray(res.settings.passport_custom_fields) ? (res.settings.passport_custom_fields as CustomField[]) : []);
     } catch {
       // ignore
+    } finally {
+      setLoading(false);
     }
   }, [token]);
 
@@ -218,6 +223,9 @@ export default function SettingsPage() {
       </div>
 
       {/* Process Steps & Emission Factors */}
+      {loading && processes.length === 0 ? (
+        <TableSkeleton rows={7} cols={7} />
+      ) : (
       <div className="card p-5 space-y-4">
         <h2 className="font-bold text-sm text-slate-900">Process Steps, Max Loss Limits &amp; Emission Factors</h2>
         <div className="overflow-x-auto border rounded-lg">
@@ -319,6 +327,7 @@ export default function SettingsPage() {
           </form>
         )}
       </div>
+      )}
 
       {/* Certificate Types & Custom Passport Fields */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">

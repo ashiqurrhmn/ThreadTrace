@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { AlertTriangle, Award, Download, Plus, RefreshCw, ZapOff } from 'lucide-react';
 import { API_BASE, apiFetch, ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { TableSkeleton } from '@/components/Skeleton';
 
 interface EvidenceItem {
   id: string;
@@ -28,6 +29,7 @@ export default function EvidencePage() {
   const [certTypes, setCertTypes] = useState<Array<{ code: string; name: string }>>([]);
   const [parties, setParties] = useState<Array<{ id: string; code: string; name: string }>>([]);
   const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [form, setForm] = useState({
@@ -42,7 +44,11 @@ export default function EvidencePage() {
   });
 
   const load = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     try {
       const [evRes, cfgRes, pRes] = await Promise.all([
         apiFetch<{ items: EvidenceItem[] }>('/evidences?limit=50', { token }),
@@ -55,6 +61,8 @@ export default function EvidencePage() {
       if (pRes.items[0]) setForm((f) => ({ ...f, partyId: f.partyId || pRes.items[0].id }));
     } catch (e) {
       setMsg({ type: 'err', text: e instanceof ApiError ? e.message : 'Failed to load certificates' });
+    } finally {
+      setLoading(false);
     }
   }, [token]);
 
@@ -160,6 +168,9 @@ export default function EvidencePage() {
         </div>
       )}
 
+      {loading ? (
+        <TableSkeleton rows={5} cols={6} />
+      ) : (
       <div className="card overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead className="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-500">
@@ -246,6 +257,7 @@ export default function EvidencePage() {
           </tbody>
         </table>
       </div>
+      )}
 
       {showModal && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">

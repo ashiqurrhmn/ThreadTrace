@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Building2, Factory, Lock, Plus } from 'lucide-react';
 import { apiFetch, ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { TableSkeleton } from '@/components/Skeleton';
 
 interface PartyItem {
   id: string;
@@ -24,6 +25,7 @@ export default function PartiesPage() {
   const [parties, setParties] = useState<PartyItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showLineModal, setShowLineModal] = useState(false);
 
@@ -49,6 +51,7 @@ export default function PartiesPage() {
 
   const load = useCallback(async () => {
     setError(null);
+    setLoading(true);
     try {
       const res = await apiFetch<{ items: PartyItem[] }>('/parties?limit=50', { token });
       setParties(res.items);
@@ -58,6 +61,8 @@ export default function PartiesPage() {
       }
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Failed to load parties');
+    } finally {
+      setLoading(false);
     }
   }, [token]);
 
@@ -159,6 +164,9 @@ export default function PartiesPage() {
         <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm">{success}</div>
       )}
 
+      {loading ? (
+        <TableSkeleton rows={6} cols={8} />
+      ) : (
       <div className="card overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead className="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-500">
@@ -237,6 +245,7 @@ export default function PartiesPage() {
           </tbody>
         </table>
       </div>
+      )}
 
       {/* Register Party Modal */}
       {showModal && (

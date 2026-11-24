@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { CheckCircle2, GitMerge, Layers, Plus, RotateCcw, ShieldAlert, ShieldCheck, Split } from 'lucide-react';
 import { apiFetch, ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { DetailCardSkeleton, SplitPaneSkeleton } from '@/components/Skeleton';
 
 interface LotItem {
   id: string;
@@ -72,6 +73,8 @@ export default function LotsPage() {
   const [selectedLot, setSelectedLot] = useState<LotDetail | null>(null);
   const [verifyResult, setVerifyResult] = useState<{ valid: boolean; eventsChecked: number; headHash: string } | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'ok' | 'err'; msg: string } | null>(null);
+  const [loadingList, setLoadingList] = useState(true);
+  const [loadingDetail, setLoadingDetail] = useState(false);
 
   // Create Lot Modal
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -136,8 +139,10 @@ export default function LotsPage() {
     if (!token) {
       setLots([]);
       setSelectedLot(null);
+      setLoadingList(false);
       return;
     }
+    setLoadingList(true);
     try {
       const [lRes, pRes, bRes, cRes] = await Promise.all([
         apiFetch<{ items: LotItem[] }>('/lots?limit=80', { token }),
@@ -165,6 +170,8 @@ export default function LotsPage() {
       }
     } catch (e) {
       setFeedback({ type: 'err', msg: e instanceof ApiError ? e.message : 'Failed to load lots' });
+    } finally {
+      setLoadingList(false);
     }
   }, [token]);
 
@@ -175,6 +182,7 @@ export default function LotsPage() {
   const openLotDetail = async (id: string) => {
     setVerifyResult(null);
     setFeedback(null);
+    setLoadingDetail(true);
     try {
       const detail = await apiFetch<LotDetail>(`/lots/${id}`, { token });
       setSelectedLot(detail);
@@ -188,6 +196,8 @@ export default function LotsPage() {
       }));
     } catch (e) {
       setFeedback({ type: 'err', msg: e instanceof ApiError ? e.message : 'Access denied or failed' });
+    } finally {
+      setLoadingDetail(false);
     }
   };
 
@@ -398,6 +408,9 @@ export default function LotsPage() {
         </div>
       )}
 
+      {loadingList ? (
+        <SplitPaneSkeleton leftCols={7} rightCols={5} />
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Lots List */}
         <div className="lg:col-span-7 card overflow-hidden">
@@ -455,7 +468,9 @@ export default function LotsPage() {
 
         {/* Selected Lot Details & Hash Chain */}
         <div className="lg:col-span-5 space-y-4">
-          {selectedLot ? (
+          {loadingDetail ? (
+            <DetailCardSkeleton />
+          ) : selectedLot ? (
             <div className="card p-5 space-y-4">
               <div className="flex items-start justify-between gap-2">
                 <div>
@@ -622,6 +637,7 @@ export default function LotsPage() {
           )}
         </div>
       </div>
+      )}
 
       {/* Create New Lot Modal */}
       {showCreateModal && (

@@ -18,6 +18,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { API_BASE } from '@/lib/api';
+import { PublicPassportSkeleton } from '@/components/Skeleton';
 
 interface PublicPassportResponse {
   cacheStatus: 'HIT-DB' | 'HIT-CACHE-DB-DOWN' | 'HIT-CACHE';
@@ -116,11 +117,7 @@ export default function PublicQrPassportPage() {
   }
 
   if (!passport) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center text-sm text-slate-500">
-        Loading Digital Product Passport…
-      </div>
-    );
+    return <PublicPassportSkeleton />;
   }
 
   const d = passport.data;
