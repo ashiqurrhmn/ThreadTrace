@@ -71,7 +71,7 @@ export default function DashboardPage() {
     { label: 'Hash-Chained Events', value: counts?.events ?? '—', icon: GitBranch, href: '/trace', color: 'text-emerald-600 bg-emerald-50' },
     { label: 'Published Passports', value: counts?.passports ?? '—', icon: QrCode, href: '/passports', color: 'text-teal-600 bg-teal-50' },
     { label: 'Valid Certificates', value: counts?.activeCerts ?? '—', icon: Award, href: '/evidence', color: 'text-amber-600 bg-amber-50' },
-    { label: 'Disk Cached Snapshots (QA4)', value: overview?.cache.diskEntries ?? '—', icon: ShieldCheck, href: '/compliance', color: 'text-purple-600 bg-purple-50' },
+    { label: 'Cached Passport Snapshots', value: overview?.cache.diskEntries ?? '—', icon: ShieldCheck, href: '/compliance', color: 'text-purple-600 bg-purple-50' },
   ];
 
   return (
@@ -81,7 +81,7 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <span className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold mb-2">
-              CSE 444 · Project 4 · ThreadTrace Live System
+              EU ESPR Textile Compliance · Digital Product Passport Platform
             </span>
             <h1 className="text-2xl font-bold tracking-tight">
               Garment Supply-Chain Traceability &amp; Digital Product Passports
@@ -108,15 +108,15 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Offline Notice if PostgreSQL Stopped for QA4 Demo */}
+      {/* Offline Notice if Database is Unavailable */}
       {overview?.offlineMode && (
         <div className="p-4 rounded-xl bg-amber-50 border border-amber-300 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
             <div>
-              <div className="font-semibold text-amber-900 text-sm">PostgreSQL is currently offline (QA4 Resilience Mode)</div>
+              <div className="font-semibold text-amber-900 text-sm">Database Offline — High-Availability Passport Cache Active</div>
               <div className="text-xs text-amber-800">
-                Admin database queries are paused, but <strong>{overview.cache.diskEntries} public passport snapshots</strong> remain live from local disk cache!
+                Primary database queries are temporarily unavailable, but <strong>{overview.cache.diskEntries} public passport snapshots</strong> remain live from resilience cache.
               </div>
             </div>
           </div>
@@ -125,7 +125,7 @@ export default function DashboardPage() {
             target="_blank"
             className="px-3 py-1.5 rounded-lg bg-amber-600 text-white text-xs font-semibold shrink-0"
           >
-            Test Public Passport Now
+            Open Cached Passport
           </Link>
         </div>
       )}
@@ -148,13 +148,13 @@ export default function DashboardPage() {
         })}
       </div>
 
-      {/* Expiry Alerts Banner (FR5) */}
+      {/* Expiry Alerts Banner */}
       {alerts.length > 0 && (
         <div className="card p-5 border-amber-200 bg-amber-50/50">
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-semibold text-amber-950 flex items-center gap-2 text-sm">
               <AlertTriangle className="w-4 h-4 text-amber-600" />
-              Active Certificate Expiry Alerts (30-Day Window — FR5)
+              Certificate Expiry Alerts (30-Day Renewal Window)
             </h2>
             <Link href="/evidence" className="text-xs font-semibold text-amber-800 hover:underline">
               Manage Certificates →
@@ -180,46 +180,46 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Interactive Demo Walkthrough Grid */}
+      {/* Platform Modules & Capabilities Grid */}
       <div className="card p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="font-bold text-slate-900">Live Feature &amp; Quality-Attribute Demo Map</h2>
+            <h2 className="font-bold text-slate-900">Platform Modules &amp; Capabilities</h2>
             <p className="text-xs text-slate-500">
-              Current role: <strong>{user.name}</strong> ({user.role}). Switch roles in the top bar anytime to test audience views &amp; cross-brand isolation.
+              Active session: <strong>{user.name}</strong> ({user.role}). Switch audience roles in the top bar to preview role-based access and brand isolation.
             </p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           {[
             {
-              title: 'FR3 + QA1: 6-Level Backward & Forward Trace',
-              desc: 'Trace LOT-SHIP-NW-01 backward to mills, or LOT-RAW-ORG-01 forward across splits & merges with live ms timing.',
+              title: 'Multi-Tier Backward & Forward Lineage Trace',
+              desc: 'Trace finished export cartons back to spinning mills, or trace raw yarn lots forward across splits and merges to affected shipments.',
               href: '/trace',
             },
             {
-              title: 'FR4 + QA2: Mass Balance & Planted Defect Audit',
-              desc: 'Detect over-claimed recycled content, expired certs, >12% cutting loss, and orphan lots automatically.',
+              title: 'Automated Compliance & Mass-Balance Auditing',
+              desc: 'Continuously monitor process loss limits, organic and recycled claim coverage, certificate validity, and lineage completeness.',
               href: '/compliance',
             },
             {
-              title: 'FR5: Certificate Upload & Auto-Drop on Expiry',
-              desc: 'Click "Simulate Expiry" on GRS-BD-2026-4412 and watch DPP-2026-NW-001 drop the Recycled claim live.',
+              title: 'Certificate Lifecycle & Automatic Claim Protection',
+              desc: 'Manage GOTS, GRS, OEKO-TEX, and ISO certificates with 30-day renewal alerts and automatic removal of expired claims from passports.',
               href: '/evidence',
             },
             {
-              title: 'FR6 + FR7 + FR8: Footprint Allocation & QR Passports',
-              desc: 'Toggle MASS vs PIECE_COUNT footprint, switch versions (v1/v2), compare Public vs Brand vs Auditor views.',
+              title: 'Environmental Footprint & QR Product Passports',
+              desc: 'Compute per-garment water, energy, and CO₂e footprint by mass or piece count, and publish versioned QR Digital Product Passports.',
               href: '/passports',
             },
             {
-              title: 'FR9: Bulk CSV / Excel Factory Import',
-              desc: 'Download sample cutting_report_sample.csv and upload to see valid rows committed & bad rows rejected with reasons.',
+              title: 'Bulk Factory CSV & Excel Ingestion',
+              desc: 'Import daily cutting reports and packing lists with automated row-level mass-balance validation and exception reporting.',
               href: '/imports',
             },
             {
-              title: 'QA5: Config-Only Process Steps & Custom Passport Fields',
-              desc: 'Add a new process step, certificate type, emission factor, or passport field live with zero code changes.',
+              title: 'Dynamic Process, Certificate & Passport Rules',
+              desc: 'Configure process stages, allowed loss thresholds, emission factors, certificate types, and custom passport attributes.',
               href: '/settings',
             },
           ].map((item) => (
@@ -238,14 +238,14 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Quick Sample Downloads */}
+      {/* Workspace Summary */}
       <div className="card p-4 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
         <div className="flex items-center gap-2">
           <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-          <span>Pre-seeded Bangladeshi RMG scenario active: <strong>NordicWear AB</strong> &amp; <strong>EuroStyle GmbH</strong> · 4 planted QA2 defects ready.</span>
+          <span>Active Workspace: <strong>Gazipur Knitwear Export Factory</strong> · Connected Buyers: <strong>NordicWear AB</strong> &amp; <strong>EuroStyle GmbH</strong>.</span>
         </div>
         <Link href="/compliance" className="text-emerald-700 font-semibold hover:underline">
-          Run QA2 + QA3 Scans →
+          Open Compliance Center →
         </Link>
       </div>
     </div>

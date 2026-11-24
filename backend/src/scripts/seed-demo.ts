@@ -664,8 +664,8 @@ async function seedDemo() {
       ],
       child: {
         lotCode: 'LOT-DEFECT-OVERCLAIM',
-        materialType: 'Over-Claimed Recycled Hoodie (Planted QA2 Defect)',
-        styleCode: 'NW-HOODIE-QA2',
+        materialType: 'Recycled Blend Fleece Hoodie — Batch #402',
+        styleCode: 'NW-HOODIE-2026',
         brandId: nordicWear.id,
         quantity: 200,
         unit: 'PIECES',
@@ -676,27 +676,27 @@ async function seedDemo() {
           { fibre: 'Recycled Polyester', percent: 30 },
         ],
         claimedOrganicPct: 0,
-        claimedRecycledPct: 85, // PLANTED OVER-CLAIM! Only 30% is supported!
+        claimedRecycledPct: 85, // Claim exceeds 30% certified lineage support
       },
     },
     adminUser
   );
 
-  // Publish passport for over-claimed lot -> proves passport caps/refuses 85% and only shows 30%!
+  // Publish passport -> proves passport caps unsupported 85% claim to verified 30%
   await PassportService.createPassport({
-    passportCode: 'DPP-2026-QA2-CHECK',
-    styleCode: 'NW-HOODIE-QA2',
-    shipmentRef: 'SHP-QA2-OVERCLAIM-TEST',
+    passportCode: 'DPP-2026-NW-002',
+    styleCode: 'NW-HOODIE-2026',
+    shipmentRef: 'SHP-BD-SE-2026-048',
     lotId: overClaimMerge.childLot.id,
     brandId: nordicWear.id,
   });
 
-  // Defect #2: Expired certificate attached to lot
+  // Exception #2: Expired certificate attached to lot
   const expCertLot = (await LotEventService.createLot(
     {
       lotCode: 'LOT-DEFECT-EXPCERT',
-      materialType: 'Recycled Denim Lot with Expired GRS Cert (Planted QA2 Defect)',
-      styleCode: 'ES-DENIM-QA2',
+      materialType: 'Recycled Stretch Denim Roll — Batch #118',
+      styleCode: 'ES-DENIM-2026',
       brandId: euroStyle.id,
       partyId: recycledMill.id,
       quantity: 150,
@@ -712,8 +712,8 @@ async function seedDemo() {
   await EvidenceService.createEvidence({
     certificateNumber: 'GRS-EXP-2025-0099',
     certTypeCode: 'GRS',
-    issuer: 'Control Union (Expired)',
-    scope: 'Expired recycled denim certification',
+    issuer: 'Control Union',
+    scope: 'Recycled denim mill certification',
     lotId: expCertLot.id,
     validFrom: daysFromNow(-410),
     validUntil: daysFromNow(-45), // EXPIRED 45 days ago!
@@ -721,12 +721,12 @@ async function seedDemo() {
     file: { buffer: samplePdf('Expired GRS Cert'), originalName: 'GRS-EXP-2025-0099.pdf', mimeType: 'application/pdf' },
   });
 
-  // Defect #3: Cutting loss exceeding 12% limit (18.5% loss recorded as FLAGGED event)
+  // Exception #3: Cutting loss exceeding 12% limit (18.5% loss recorded as FLAGGED event)
   const excessLossLot = (await LotEventService.createLot(
     {
       lotCode: 'LOT-DEFECT-LOSS',
-      materialType: 'Cut Fleece Panels — Excess Cutting Loss (Planted QA2 Defect)',
-      styleCode: 'NW-FLEECE-QA2',
+      materialType: 'Cut Brushed Fleece Panels — Batch #209',
+      styleCode: 'NW-FLEECE-2026',
       brandId: nordicWear.id,
       partyId: factory.id,
       quantity: 200,
@@ -793,19 +793,19 @@ async function seedDemo() {
     data: { status: 'FLAGGED', weightKg: 163, quantity: 163 },
   });
 
-  // Defect #4: Orphan Lot (non-root downstream lot with zero parent edges)
+  // Exception #4: Orphan Lot (non-root downstream lot with zero parent edges)
   await LotEventService.createLot(
     {
       lotCode: 'LOT-DEFECT-ORPHAN',
-      materialType: 'Unlinked Sewn Garment Lot (Planted QA2 Orphan Lot)',
-      styleCode: 'ES-ORPHAN-QA2',
+      materialType: 'Subcontracted Sewn Pique Lot — Batch #315',
+      styleCode: 'ES-PIQUE-2026',
       brandId: euroStyle.id,
       partyId: factory.id,
       quantity: 120,
       unit: 'PIECES',
       weightKg: 32,
       pieceCount: 120,
-      isRootSource: false, // PLANTED ORPHAN! No incoming parent edge!
+      isRootSource: false,
     },
     adminUser
   );
@@ -853,8 +853,8 @@ async function seedDemo() {
 
   console.log('✅ Seed completed successfully!');
   console.log('   - Brands: NordicWear AB, EuroStyle GmbH');
-  console.log('   - Passports: DPP-2026-NW-001 (v1 & v2), DPP-2026-ES-001, DPP-2026-QA2-CHECK');
-  console.log('   - Planted QA2 Defects: LOT-DEFECT-OVERCLAIM, GRS-EXP-2025-0099, LOT-DEFECT-LOSS, LOT-DEFECT-ORPHAN');
+  console.log('   - Passports: DPP-2026-NW-001 (v1 & v2), DPP-2026-ES-001, DPP-2026-NW-002');
+  console.log('   - Compliance Exceptions: LOT-DEFECT-OVERCLAIM, GRS-EXP-2025-0099, LOT-DEFECT-LOSS, LOT-DEFECT-ORPHAN');
   console.log('   - Sample Import Files: data/samples/cutting_report_sample.csv & packing_list_sample.xlsx');
 }
 

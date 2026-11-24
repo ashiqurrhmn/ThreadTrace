@@ -105,7 +105,7 @@ export default function SettingsPage() {
         energyKwhPerKg: '1.2',
         co2eKgPerKg: '0.85',
       });
-      setMsg({ type: 'ok', text: 'Process step & emission factor saved via configuration alone (QA5)!' });
+      setMsg({ type: 'ok', text: 'Process step & emission factor saved via configuration.' });
       await load();
     } catch (err) {
       setMsg({ type: 'err', text: err instanceof ApiError ? err.message : 'Save failed' });
@@ -125,7 +125,7 @@ export default function SettingsPage() {
         }),
       });
       setNewCert({ code: '', name: '', claimTag: 'FAIR_LABOR', defaultValidityDays: '365' });
-      setMsg({ type: 'ok', text: 'New certificate type added via configuration alone (QA5)!' });
+      setMsg({ type: 'ok', text: 'New certificate type added via configuration.' });
       await load();
     } catch (err) {
       setMsg({ type: 'err', text: err instanceof ApiError ? err.message : 'Save failed' });
@@ -146,7 +146,7 @@ export default function SettingsPage() {
       setNewField({ key: '', label: '', defaultValue: '' });
       setMsg({
         type: 'ok',
-        text: 'Custom passport field added! Republish any passport to see it live without editing lineage or mass-balance code (QA5).',
+        text: 'Custom passport field added. Republish any passport to include it in public and partner views.',
       });
       await load();
     } catch (err) {
@@ -163,7 +163,7 @@ export default function SettingsPage() {
         body: JSON.stringify({ method }),
       });
       setAllocationMethod(method);
-      setMsg({ type: 'ok', text: `Default footprint allocation strategy updated to ${method} (FR6 / QA5).` });
+      setMsg({ type: 'ok', text: `Default footprint allocation strategy updated to ${method}.` });
     } catch (err) {
       setMsg({ type: 'err', text: err instanceof ApiError ? err.message : 'Update failed' });
     }
@@ -174,10 +174,10 @@ export default function SettingsPage() {
       <div>
         <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
           <Settings className="w-5 h-5 text-emerald-600" />
-          Config-Driven Adaptability Rules (QA5)
+          System Configuration &amp; Process Rules
         </h1>
         <p className="text-xs text-slate-500 mt-0.5">
-          Add new process steps, loss limits, emission factors, certificate types, or custom passport fields <strong>through configuration alone</strong> — zero code edits or server restarts!
+          Configure production process stages, maximum allowed loss thresholds, environmental emission factors, certificate categories, and custom passport attributes.
         </p>
       </div>
 
@@ -196,7 +196,7 @@ export default function SettingsPage() {
       {/* Default Allocation Strategy */}
       <div className="card p-5 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="font-bold text-sm text-slate-900">Default Footprint Allocation Strategy (FR6 Strategy Pattern)</div>
+          <div className="font-bold text-sm text-slate-900">Default Footprint Allocation Strategy</div>
           <div className="text-xs text-slate-500">Controls how Water, Energy &amp; CO₂e split across multi-child lots.</div>
         </div>
         <div className="flex gap-2">
@@ -364,7 +364,7 @@ export default function SettingsPage() {
         </div>
 
         <div className="card p-5 space-y-3">
-          <h2 className="font-bold text-sm text-slate-900">Custom Passport Fields (QA5 Decoupled Builder)</h2>
+          <h2 className="font-bold text-sm text-slate-900">Custom Passport Fields</h2>
           <div className="space-y-1.5 text-xs">
             {customFields.map((f) => (
               <div key={f.key} className="p-2.5 rounded-lg bg-slate-50 border flex justify-between">

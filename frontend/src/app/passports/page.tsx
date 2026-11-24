@@ -153,7 +153,7 @@ export default function PassportsPage() {
       });
       setMsg({
         type: 'ok',
-        text: `Published new version of ${code} using ${allocationMethod} footprint allocation (cached to disk for QA4)!`,
+        text: `Published new version of ${code} using ${allocationMethod} footprint allocation and updated high-availability snapshot cache!`,
       });
       await loadList();
       await inspectPassport(code);
@@ -209,10 +209,10 @@ export default function PassportsPage() {
         <div>
           <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
             <QrCode className="w-5 h-5 text-emerald-600" />
-            Digital Product Passports, Versions, Footprint &amp; Audience Views (FR6–FR8)
+            Digital Product Passports &amp; Audience Views
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Active audience view: <strong>{user.role}</strong>. Generate new passports, publish new versions switching <strong>MASS</strong> vs <strong>PIECE_COUNT</strong> footprint allocation, and compare audience DTO projections!
+            Active view: <strong>{user.role}</strong>. Generate versioned EU Digital Product Passports, configure footprint allocation methods (Mass vs. Piece Count), and preview role-based data disclosures.
           </p>
         </div>
         {canPublish && (
@@ -325,16 +325,16 @@ export default function PassportsPage() {
 
               {verifyInfo && (
                 <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-medium">
-                  ✅ Integrity Verified (FR10): All {verifyInfo.eventsChecked} events across {verifyInfo.lotsChecked} lineage lots have unbroken SHA-256 hash chains.
+                  ✅ Cryptographic Integrity Verified: All {verifyInfo.eventsChecked} events across {verifyInfo.lotsChecked} lineage lots have unbroken SHA-256 hash chains.
                 </div>
               )}
 
-              {/* Strategy Publish Controls (FR6) */}
+              {/* Strategy Publish Controls */}
               {canPublish && (
                 <div className="flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-lg bg-slate-50 border border-slate-200 text-xs">
                   <div className="flex items-center gap-2 text-slate-700">
                     <Layers className="w-4 h-4 text-emerald-600" />
-                    <span>Publish a new passport version with Allocation Strategy (FR6) &amp; latest config fields (QA5):</span>
+                    <span>Publish a new passport version with selected footprint allocation method and custom attributes:</span>
                   </div>
                   <div className="flex gap-2">
                     <button
@@ -372,7 +372,7 @@ export default function PassportsPage() {
                   </div>
                   {(selected.data.droppedClaimsNotice ?? []).length > 0 && (
                     <div className="mt-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
-                      <div className="font-bold">Dropped / Capped Unsupported Claims (QA2):</div>
+                      <div className="font-bold">Withheld / Adjusted Claims (Insufficient or Expired Evidence):</div>
                       {selected.data.droppedClaimsNotice!.map((d, i) => (
                         <div key={i}>• {d.reason}</div>
                       ))}
@@ -462,7 +462,7 @@ export default function PassportsPage() {
       {showCreateModal && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl">
-            <h2 className="font-bold text-base text-slate-900 mb-3">Generate New Digital Product Passport (FR7)</h2>
+            <h2 className="font-bold text-base text-slate-900 mb-3">Generate New Digital Product Passport</h2>
             <form onSubmit={handleCreatePassport} className="space-y-3 text-sm">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">Passport Code</label>

@@ -138,12 +138,12 @@ export default function PublicQrPassportPage() {
           </span>
         </div>
 
-        {/* QA4 DB-Down Banner */}
+        {/* High-Availability Offline Banner */}
         {passport.cacheStatus === 'HIT-CACHE-DB-DOWN' && (
           <div className="mb-4 p-3 rounded-xl bg-amber-400/20 border border-amber-300/50 text-amber-100 text-xs flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 shrink-0 text-amber-300" />
             <span>
-              <strong>Resilience Cache Active (QA4):</strong> Primary database is currently offline, yet this verified public passport loaded seamlessly from local snapshot cache!
+              <strong>High-Availability Cache Active:</strong> Serving verified Digital Product Passport from resilience snapshot cache.
             </span>
           </div>
         )}

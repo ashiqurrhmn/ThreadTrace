@@ -350,7 +350,7 @@ export default function LotsPage() {
       <div className="card p-8 text-center">
         <h2 className="font-bold text-slate-900">Authentication Required for Internal Lots</h2>
         <p className="text-sm text-slate-500 mt-1">
-          Public consumers can only access published Digital Product Passports (FR8). Switch to <strong>Auditor</strong>, <strong>Factory Admin</strong>, or a <strong>Brand</strong> role in the top bar.
+          Public consumers can only access published Digital Product Passports. Switch to <strong>Auditor</strong>, <strong>Factory Admin</strong>, or a <strong>Brand</strong> role in the top bar.
         </p>
       </div>
     );
@@ -362,10 +362,10 @@ export default function LotsPage() {
         <div>
           <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
             <Layers className="w-5 h-5 text-emerald-600" />
-            Lots, Immutable Events, Mass Balance &amp; Hash Chain (FR2, FR4, FR10)
+            Lots, Production Events &amp; Integrity Ledger
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Create lots, record process/correction events, split 1→N, merge N→1, and verify SHA-256 hash chains.
+            Track raw material and garment batches across production stages, split and merge lots, enforce mass-balance thresholds, and verify SHA-256 event hash chains.
           </p>
         </div>
         {canWrite && (
@@ -588,7 +588,7 @@ export default function LotsPage() {
                                 }));
                                 setShowEventModal(true);
                               }}
-                              title="Append immutable correction event (FR2)"
+                              title="Append immutable correction event"
                               className="px-1.5 py-0.5 rounded border border-slate-300 hover:bg-slate-100 text-[10px] font-semibold text-slate-700 inline-flex items-center gap-0.5"
                             >
                               <RotateCcw className="w-2.5 h-2.5" /> Correct
@@ -627,7 +627,7 @@ export default function LotsPage() {
       {showCreateModal && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl">
-            <h2 className="font-bold text-base text-slate-900 mb-3">Create New Lot (FR2)</h2>
+            <h2 className="font-bold text-base text-slate-900 mb-3">Create New Lot</h2>
             <form onSubmit={handleCreateLot} className="space-y-3 text-sm">
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -757,7 +757,7 @@ export default function LotsPage() {
                   checked={createForm.isRootSource}
                   onChange={(e) => setCreateForm({ ...createForm, isRootSource: e.target.checked })}
                 />
-                Root Mill Source (uncheck to test QA2 Orphan Lot detection)
+                Origin Mill Source Lot (uncheck for downstream intermediate batches)
               </label>
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setShowCreateModal(false)} className="px-4 py-2 rounded-lg border">
@@ -776,7 +776,7 @@ export default function LotsPage() {
       {showMergeModal && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl">
-            <h2 className="font-bold text-base text-slate-900 mb-3">Merge 2 Parent Lots into 1 Child Lot (FR2)</h2>
+            <h2 className="font-bold text-base text-slate-900 mb-3">Merge 2 Parent Lots into 1 Child Lot</h2>
             <form onSubmit={handleMergeLots} className="space-y-3 text-sm">
               <div className="grid grid-cols-3 gap-2">
                 <div className="col-span-2">
@@ -910,7 +910,7 @@ export default function LotsPage() {
             <p className="text-xs text-slate-500 mb-4">
               {eventForm.eventType === 'CORRECTION'
                 ? 'Original events are never mutated. This appends a new hash-chained CORRECTION event.'
-                : 'Try setting CUT with output < 88% of input (>12% loss) to see Mass Balance BLOCK it (RFC 9457)!'}
+                : 'Mass-balance loss thresholds are validated automatically based on the selected process stage.'}
             </p>
             <form onSubmit={handleRecordEvent} className="space-y-3 text-sm">
               <div>

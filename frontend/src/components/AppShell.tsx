@@ -23,14 +23,14 @@ import { PersonaKey, useAuth } from '@/lib/auth-context';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/parties', label: 'Parties & Lines (FR1)', icon: Building2 },
-  { href: '/lots', label: 'Lots & Events (FR2/4/10)', icon: Layers },
-  { href: '/trace', label: 'Lineage Trace (FR3/QA1)', icon: GitBranch },
-  { href: '/evidence', label: 'Certificates (FR5)', icon: Award },
-  { href: '/passports', label: 'Passports & QR (FR6/7/8)', icon: QrCode },
-  { href: '/imports', label: 'Bulk Import (FR9)', icon: FileSpreadsheet },
-  { href: '/compliance', label: 'QA2/3/4 Audit', icon: ShieldCheck },
-  { href: '/settings', label: 'Config Rules (QA5)', icon: Settings },
+  { href: '/parties', label: 'Parties & Production Lines', icon: Building2 },
+  { href: '/lots', label: 'Lots & Production Events', icon: Layers },
+  { href: '/trace', label: 'Lineage Traceability', icon: GitBranch },
+  { href: '/evidence', label: 'Certificates & Evidence', icon: Award },
+  { href: '/passports', label: 'Product Passports & QR', icon: QrCode },
+  { href: '/imports', label: 'Bulk Data Import', icon: FileSpreadsheet },
+  { href: '/compliance', label: 'Compliance & Security', icon: ShieldCheck },
+  { href: '/settings', label: 'System Configuration', icon: Settings },
 ];
 
 const PERSONAS: Array<{ key: PersonaKey; label: string; tag: string }> = [
@@ -125,7 +125,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             rel="noreferrer"
             className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition"
           >
-            <span>Swagger OpenAPI Docs</span>
+            <span>API Documentation</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
@@ -151,10 +151,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Database className="w-3.5 h-3.5" />
               )}
               {dbUp === true
-                ? 'PostgreSQL 18 Online'
+                ? 'System Online'
                 : dbUp === false
-                ? 'DB Offline — Public Passport Cache Active (QA4)'
-                : 'Checking DB...'}
+                ? 'Offline Resilience Mode — Passport Cache Active'
+                : 'Checking Status...'}
             </span>
             <span className="hidden md:inline-flex items-center gap-1.5 text-xs text-slate-500">
               <Activity className="w-3.5 h-3.5 text-emerald-600" />
@@ -162,9 +162,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </span>
           </div>
 
-          {/* 1-Click Audience Role Switcher for Live Demo (FR8 + QA3) */}
+          {/* 1-Click Audience Role Switcher */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs font-semibold text-slate-500 mr-1">Demo Role:</span>
+            <span className="text-xs font-semibold text-slate-500 mr-1">View As:</span>
             {PERSONAS.map((p) => (
               <button
                 key={p.key}

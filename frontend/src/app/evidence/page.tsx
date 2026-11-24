@@ -132,10 +132,10 @@ export default function EvidencePage() {
         <div>
           <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
             <Award className="w-5 h-5 text-emerald-600" />
-            Certificates, Test Reports &amp; Auto-Expiry Alerts (FR5)
+            Certificates, Test Reports &amp; Validity Monitoring
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Certificates expiring within 30 days raise alerts. Click <strong>Simulate Expire</strong> on any active cert (e.g. GRS-BD-2026-4412) and refresh the public passport to watch the claim disappear automatically!
+            Attach compliance certificates and lab test reports to suppliers or material lots. Expiring certificates trigger 30-day renewal alerts, and expired certificates automatically revoke dependent sustainability claims on published passports.
           </p>
         </div>
         {canManage && (
@@ -228,7 +228,7 @@ export default function EvidencePage() {
                         onClick={() => handleSimulateExpire(ev)}
                         className="px-2 py-1 rounded bg-red-50 border border-red-200 text-red-700 hover:bg-red-100 text-xs font-semibold inline-flex items-center gap-1"
                       >
-                        <ZapOff className="w-3 h-3" /> Simulate Expire
+                        <ZapOff className="w-3 h-3" /> Mark Expired
                       </button>
                     )}
                     {canManage && ev.status === 'EXPIRED' && (

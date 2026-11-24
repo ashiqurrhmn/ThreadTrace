@@ -5,7 +5,7 @@ import { AppShell } from '@/components/AppShell';
 
 export const metadata: Metadata = {
   title: 'ThreadTrace — Garment Supply-Chain Traceability & Digital Product Passports',
-  description: 'CSE 444 Project 4: Textile Traceability, Mass Balance, Footprint Roll-up & EU DPP',
+  description: 'Enterprise Garment Supply-Chain Traceability, Mass Balance, Environmental Footprint & EU Digital Product Passports',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

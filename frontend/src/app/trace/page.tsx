@@ -94,10 +94,10 @@ export default function TracePage() {
       <div>
         <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
           <GitBranch className="w-5 h-5 text-emerald-600" />
-          6-Level Lineage Traceability (FR3 &amp; QA1)
+          Multi-Tier Supply-Chain Lineage Traceability
         </h1>
         <p className="text-xs text-slate-500 mt-0.5">
-          Powered by PostgreSQL <code className="bg-slate-100 px-1 rounded">WITH RECURSIVE</code> over indexed bidirectional <code className="bg-slate-100 px-1 rounded">lot_edges</code> (QA1 target: &lt; 2000 ms).
+          Trace any export carton or style backward to its raw material mills, or trace any upstream yarn/fabric lot forward to all downstream shipments and buyers.
         </p>
       </div>
 
@@ -184,7 +184,7 @@ export default function TracePage() {
           {/* Metrics Strip */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="card p-4">
-              <div className="text-xs text-slate-500">Query Latency (QA1 &lt; 2000ms)</div>
+              <div className="text-xs text-slate-500">Query Execution Time</div>
               <div className="text-xl font-bold text-emerald-600 flex items-center gap-1.5 mt-1">
                 <Clock className="w-4 h-4" /> {result.queryTimeMs} ms
               </div>

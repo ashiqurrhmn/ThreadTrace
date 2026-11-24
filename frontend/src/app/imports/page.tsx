@@ -81,17 +81,17 @@ export default function ImportsPage() {
       <div>
         <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
           <FileSpreadsheet className="w-5 h-5 text-emerald-600" />
-          Bulk Factory CSV &amp; Excel Import (FR9)
+          Bulk Factory CSV &amp; Excel Data Import
         </h1>
         <p className="text-xs text-slate-500 mt-0.5">
-          Uses the <strong>Adapter Pattern</strong> to parse both <code className="bg-slate-100 px-1 rounded">.csv</code> and <code className="bg-slate-100 px-1 rounded">.xlsx</code> exports, running mass-balance &amp; hash-chaining per row and reporting exact rejection reasons.
+          Upload daily cutting reports, packing lists, and production event logs in CSV or Excel (<code className="bg-slate-100 px-1 rounded">.xlsx</code>) format with automated mass-balance validation and row-level exception reporting.
         </p>
       </div>
 
-      {/* Download Ready Samples */}
+      {/* Download Templates */}
       <div className="card p-4 bg-emerald-50/60 border-emerald-200 flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="text-emerald-950">
-          <strong>Ready-to-Demo Factory Files:</strong> Include both valid events and intentional invalid rows (excess cutting loss &amp; unknown lot/party) so you can demonstrate row-level rejections immediately!
+          <strong>Sample Import Templates:</strong> Download standard factory CSV and Excel templates to test bulk ingestion and row-level validation.
         </div>
         <div className="flex gap-2">
           <a

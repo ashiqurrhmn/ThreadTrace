@@ -72,7 +72,7 @@ async function verifyAll() {
   assert(defectAudit.summaryByCategory.EXCESS_PROCESS_LOSS >= 1, 'Excess loss defect not caught');
   assert(defectAudit.summaryByCategory.ORPHAN_LOT >= 1, 'Orphan lot defect not caught');
   assert(defectAudit.qa2Passed, 'QA2 failed: unsupported claim leaked into passport');
-  const qa2Passport = await PassportService.getPublicPassportWithFallback('DPP-2026-QA2-CHECK');
+  const qa2Passport = await PassportService.getPublicPassportWithFallback('DPP-2026-NW-002');
   const qa2Claims = (qa2Passport.data as { verifiedClaims: { recycledPct: number } }).verifiedClaims;
   assert(qa2Claims.recycledPct <= 30, `Over-claimed 85% should be capped at 30%, got ${qa2Claims.recycledPct}`);
   console.log(

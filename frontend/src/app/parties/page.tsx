@@ -128,10 +128,10 @@ export default function PartiesPage() {
         <div>
           <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
             <Building2 className="w-5 h-5 text-emerald-600" />
-            Parties, Suppliers &amp; Production Lines (FR1)
+            Parties, Suppliers &amp; Production Lines
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Audience Proxy active for <strong>{user.role}</strong> — switch to <strong>Public</strong> or <strong>Brand</strong> in the top bar to watch confidential fields disappear (FR8 / QA3).
+            Manage spinning mills, fabric mills, dye houses, wash plants, trims suppliers, and factory production lines. Role-based access automatically redacts confidential pricing and workforce fields for external audiences (active role: <strong>{user.role}</strong>).
           </p>
         </div>
         {canCreate && (
@@ -366,7 +366,7 @@ export default function PartiesPage() {
       {showLineModal && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl">
-            <h2 className="font-bold text-lg text-slate-900 mb-4">Add Production Line (FR1)</h2>
+            <h2 className="font-bold text-lg text-slate-900 mb-4">Add Production Line</h2>
             <form onSubmit={handleCreateLine} className="space-y-3 text-sm">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">Factory / Facility</label>
