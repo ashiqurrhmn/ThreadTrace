@@ -1,0 +1,320 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Brand {
+  id        String     @id @default(uuid())
+  code      String     @unique
+  name      String
+  country   String
+  createdAt DateTime   @default(now())
+
+  users     User[]
+  lots      Lot[]
+  passports Passport[]
+
+  @@map("brands")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   // AUDITOR | FACTORY_ADMIN | BRAND_USER
+  brandId      String?
+  createdAt    DateTime @default(now())
+
+  brand        Brand?   @relation(fields: [brandId], references: [id])
+
+  @@index([role])
+  @@index([brandId])
+  @@map("users")
+}
+
+model Party {
+  id           String           @id @default(uuid())
+  code         String           @unique
+  name         String
+  type         String           // SPINNING_MILL | FABRIC_MILL | DYE_HOUSE | WASH_PLANT | TRIMS_SUPPLIER | FACTORY
+  country      String
+  city         String
+  // STRICTLY CONFIDENTIAL FIELDS (NEVER IN PUBLIC DTO - FR8 / QA3)
+  exactAddress String
+  workerCount  Int
+  unitPriceUsd Float
+  contactEmail String
+  metadata     Json             @default("{}")
+  createdAt    DateTime         @default(now())
+
+  productionLines ProductionLine[]
+  lots            Lot[]
+  events          LotEvent[]
+  evidences       Evidence[]
+
+  @@index([type])
+  @@map("parties")
+}
+
+model ProductionLine {
+  id             String     @id @default(uuid())
+  code           String     @unique
+  name           String
+  partyId        String
+  processType    String
+  capacityPerDay Int
+  active         Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+
+  party          Party      @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  events         LotEvent[]
+
+  @@index([partyId])
+  @@map("production_lines")
+}
+
+model ProcessConfig {
+  code             String   @id
+  label            String
+  sequenceOrder    Int
+  maxLossPercent   Float    @default(5.0)
+  enforcementMode  String   @default("BLOCK") // BLOCK | FLAG
+  waterLitersPerKg Float    @default(0.0)
+  energyKwhPerKg   Float    @default(0.0)
+  co2eKgPerKg      Float    @default(0.0)
+  active           Boolean  @default(true)
+  updatedAt        DateTime @updatedAt
+
+  @@map("process_configs")
+}
+
+model CertificateTypeConfig {
+  code                String     @id
+  name                String
+  claimTag            String?    // ORGANIC | RECYCLED | CHEMICAL_SAFE | FAIR_LABOR | null
+  requiresFile        Boolean    @default(true)
+  defaultValidityDays Int        @default(365)
+  active              Boolean    @default(true)
+  updatedAt           DateTime   @updatedAt
+
+  evidences           Evidence[]
+
+  @@map("certificate_type_configs")
+}
+
+model SystemSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+model Lot {
+  id                   String     @id @default(uuid())
+  lotCode              String     @unique
+  materialType         String
+  styleCode            String?
+  brandId              String?
+  partyId              String
+  status               String     @default("RECEIVED") // RECEIVED | IN_PROCESS | SPLIT | MERGED | COMPLETED | SHIPPED | QUARANTINED | FLAGGED
+  quantity             Float
+  unit                 String     // KG | PIECES | CARTONS
+  weightKg             Float
+  pieceCount           Int?
+  fibreComposition     Json       @default("[]")
+  claimedOrganicPct    Float      @default(0.0)
+  claimedRecycledPct   Float      @default(0.0)
+  certifiedOrganicPct  Float      @default(0.0)
+  certifiedRecycledPct Float      @default(0.0)
+  isRootSource         Boolean    @default(false)
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  brand                Brand?     @relation(fields: [brandId], references: [id])
+  party                Party      @relation(fields: [partyId], references: [id])
+  events               LotEvent[]
+  outgoingEdges        LotEdge[]  @relation("ParentLot")
+  incomingEdges        LotEdge[]  @relation("ChildLot")
+  evidences            Evidence[]
+  passports            Passport[]
+
+  @@index([brandId])
+  @@index([styleCode])
+  @@index([partyId])
+  @@index([status])
+  @@map("lots")
+}
+
+model LotEvent {
+  id                  String          @id @default(uuid())
+  lotId               String
+  eventType           String          // Matches ProcessConfig.code or CORRECTION
+  partyId             String
+  productionLineId    String?
+  inputQuantity       Float
+  outputQuantity      Float
+  unit                String
+  inputWeightKg       Float
+  outputWeightKg      Float
+  lossPercent         Float           @default(0.0)
+  massBalanceStatus   String          @default("PASS") // PASS | FLAGGED | BLOCKED
+  massBalanceNote     String?
+  waterLiters         Float           @default(0.0)
+  energyKwh           Float           @default(0.0)
+  co2eKg              Float           @default(0.0)
+  correctionOfEventId String?
+  sequenceNum         Int
+  prevHash            String
+  eventHash           String
+  metadata            Json            @default("{}")
+  recordedBy          String
+  occurredAt          DateTime        @default(now())
+
+  lot                 Lot             @relation(fields: [lotId], references: [id], onDelete: Cascade)
+  party               Party           @relation(fields: [partyId], references: [id])
+  productionLine      ProductionLine? @relation(fields: [productionLineId], references: [id])
+  correctionOf        LotEvent?       @relation("EventCorrection", fields: [correctionOfEventId], references: [id])
+  corrections         LotEvent[]      @relation("EventCorrection")
+  edges               LotEdge[]
+
+  @@unique([lotId, sequenceNum])
+  @@index([lotId])
+  @@index([eventType])
+  @@index([massBalanceStatus])
+  @@index([occurredAt])
+  @@map("lot_events")
+}
+
+model LotEdge {
+  id                String    @id @default(uuid())
+  parentLotId       String
+  childLotId        String
+  eventId           String?
+  processStep       String
+  allocatedWeightKg Float
+  allocatedPieces   Int?
+  allocationRatio   Float     @default(1.0)
+  createdAt         DateTime  @default(now())
+
+  parentLot         Lot       @relation("ParentLot", fields: [parentLotId], references: [id], onDelete: Cascade)
+  childLot          Lot       @relation("ChildLot", fields: [childLotId], references: [id], onDelete: Cascade)
+  event             LotEvent? @relation(fields: [eventId], references: [id])
+
+  // CRITICAL QA1 INDEXES for fast 6-level WITH RECURSIVE backward & forward trace
+  @@index([parentLotId, childLotId])
+  @@index([childLotId, parentLotId])
+  @@map("lot_edges")
+}
+
+model Evidence {
+  id                String                @id @default(uuid())
+  certificateNumber String                @unique
+  certTypeCode      String
+  issuer            String
+  scope             String
+  partyId           String?
+  lotId             String?
+  validFrom         DateTime
+  validUntil        DateTime
+  status            String                @default("VALID") // VALID | EXPIRING_SOON | EXPIRED | REVOKED
+  claimTag          String?               // ORGANIC | RECYCLED | CHEMICAL_SAFE | FAIR_LABOR
+  certifiedPercent  Float                 @default(100.0)
+  fileName          String?
+  filePath          String?
+  fileMimeType      String?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  certType          CertificateTypeConfig @relation(fields: [certTypeCode], references: [code])
+  party             Party?                @relation(fields: [partyId], references: [id])
+  lot               Lot?                  @relation(fields: [lotId], references: [id])
+  alerts            ExpiryAlert[]
+
+  @@index([validUntil])
+  @@index([partyId])
+  @@index([lotId])
+  @@index([status])
+  @@map("evidences")
+}
+
+model ExpiryAlert {
+  id            String   @id @default(uuid())
+  evidenceId    String
+  daysRemaining Int
+  message       String
+  acknowledged  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  evidence      Evidence @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+
+  @@index([evidenceId])
+  @@index([acknowledged])
+  @@map("expiry_alerts")
+}
+
+model Passport {
+  id                String            @id @default(uuid())
+  passportCode      String            @unique
+  styleCode         String
+  shipmentRef       String
+  lotId             String
+  brandId           String
+  currentVersion    Int               @default(1)
+  careAndRepair     Json              @default("{}")
+  endOfLifeGuidance Json              @default("{}")
+  customFields      Json              @default("{}")
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  lot               Lot               @relation(fields: [lotId], references: [id])
+  brand             Brand             @relation(fields: [brandId], references: [id])
+  versions          PassportVersion[]
+
+  @@index([brandId])
+  @@index([styleCode])
+  @@index([lotId])
+  @@map("passports")
+}
+
+model PassportVersion {
+  id               String   @id @default(uuid())
+  passportId       String
+  version          Int
+  allocationMethod String   // MASS | PIECE_COUNT
+  publicPayload    Json
+  brandPayload     Json
+  auditorPayload   Json
+  evidenceSnapshot Json     @default("[]")
+  etag             String
+  integrityHash    String
+  publishedAt      DateTime @default(now())
+
+  passport         Passport @relation(fields: [passportId], references: [id], onDelete: Cascade)
+
+  @@unique([passportId, version])
+  @@index([passportId])
+  @@map("passport_versions")
+}
+
+model ImportJob {
+  id              String   @id @default(uuid())
+  fileName        String
+  format          String   // CSV | XLSX
+  importType      String   // CUTTING_REPORT | PACKING_LIST | LOT_EVENTS
+  status          String   // COMPLETED | PARTIAL | FAILED
+  totalRows       Int
+  acceptedRows    Int
+  rejectedRows    Int
+  rejectedDetails Json     @default("[]")
+  createdBy       String
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("import_jobs")
+}
